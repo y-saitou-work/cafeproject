@@ -23,7 +23,8 @@
         <td>{{reservation.name}}</td>
         <td>{{reservation.stay_times}}</td>
         <td>{{reservation.is_preorder}}</td>
-        <td><button></button></td>
+        <!-- 手順9で作成 -->
+        <td> <button  onclick="location.href='{% url 'reservation_detail' pk=reservation.pk %}'">詳細</button></td>
     </tr>
     {% endfor %}
 </table>

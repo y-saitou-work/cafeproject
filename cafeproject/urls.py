@@ -20,5 +20,7 @@ from cafeapp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     # 手順5にて追加
-    path('reservation_list/',views.ReservationListView.as_view(), name='reservation_list')
+    path('reservation/list/',views.ReservationListView.as_view(), name='reservation_list'),
+    # 手順7にて追加
+    path('reservation/detail/<int:pk>', views.ReservationDetailView.as_view(), name='reservation_detail'),
 ]
