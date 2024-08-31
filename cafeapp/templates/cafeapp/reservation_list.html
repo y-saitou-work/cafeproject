@@ -21,8 +21,14 @@
         <td>{{reservation.id}}</td>
         <td>{{reservation.reservation_datetime}}</td>
         <td>{{reservation.name}}</td>
-        <td>{{reservation.stay_times}}</td>
-        <td>{{reservation.is_preorder}}</td>
+        <td>{{reservation.stay_times}}時間</td> <!--  手順10で追加 -->
+        
+        <td><!--  手順10で追加 -->
+            {% if reservation.is_preorder %}
+                有り
+            {% endif %}
+                無し
+        </td>
         <!-- 手順9で作成 -->
         <td> <button  onclick="location.href='{% url 'reservation_detail' pk=reservation.pk %}'">詳細</button></td>
     </tr>

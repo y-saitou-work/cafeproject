@@ -10,9 +10,16 @@
         <tr><th>受付No</th><td>{{object.id}}</td></tr>
         <tr><th>来店時間</th><td>{{object.reservation_datetime}}</td></tr>
         <tr><th>代表者名</th><td>{{object.name}}</td></tr>
-        <tr><th>滞在時間</th><td>{{reservation.stay_times}}</td></tr>
+        <tr><th>滞在時間</th><td>{{reservation.stay_times}}時間</td></tr><!--  手順10で修正 -->
         <tr><th>備考</th><td>{{object.remarks}}</td></tr>    
-        <tr><th>事前注文</th><td>{{object.is_preorder}}</td></tr>
+        <tr><th>事前注文</th>
+            <td><!--  手順10で修正 -->
+                {% if bject.is_preorder %}
+                    有り
+                {% endif %}
+                    無し
+            </td>
+        </tr>
     </thead>
 </table>
     <a href="{% url 'reservation_list' %}">戻る</a>
