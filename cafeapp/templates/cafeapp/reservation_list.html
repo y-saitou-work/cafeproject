@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予約一覧</title>
+</head>
+<body>
+    <h1>予約一覧</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>受付No</th>
+                <th>来店時間</th>
+                <th>代表者名</th>
+                <th>滞在時間</th>
+                <th>事前注文</th>
+                <th>アクション</th>
+            </tr>
+        </thead>
+        
+        {% for reservation in object_list %}
+        <tr>
+            <td>{{reservation.id}}</td>
+            <td>{{reservation.reservation_datetime}}</td>
+            <td>{{reservation.name}}</td>
+            <td>{{reservation.stay_times}}</td>
+            <td>{{reservation.is_preorder}}</td>
+            <td></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {# 手順5で追加　ページの表示 #}
+    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}ページ<br>
+
+    {# 前へ #}    
+    {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; 先頭</a>
+        <a href="?page={{ page_obj.previous_page_number	}}">前へ</a>
+    {% endif %}
+
+    {# 次へ #}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">次へ</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">最後 &raquo;</a>
+    {% endif %}
+                
+</body>
+</html>
