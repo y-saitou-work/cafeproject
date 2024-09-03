@@ -19,8 +19,11 @@ from cafeapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # 手順5にて追加
+    # 手順1-5にて追加
     path('reservation/list/',views.ReservationListView.as_view(), name='reservation_list'),
-    # 手順7にて追加
+    # 手順1-7にて追加
     path('reservation/detail/<int:pk>', views.ReservationDetailView.as_view(), name='reservation_detail'),
+    # 手順2-2
+    path('calendar/<int:pk>/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定されていない場合
+    path('calendar/<int:pk>/<int:year>/<int:month>/<int:day>/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定された場合
 ]

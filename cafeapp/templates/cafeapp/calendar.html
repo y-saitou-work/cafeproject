@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div>
+    <h1>予約カレンダー</h1>
+    <p>{{ start_day }}～{{ end_day }}</p>
+
+    <div>
+        <div>
+            <a href="{% url 'calendar' customer_data.pk before.year before.month before.day %}">前週</a>
+        </div>
+        <div>
+            <a  href="{% url 'calendar' customer_data.pk next.year next.month next.day %}">次週</a>
+        </div>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    {% for day in days %}
+                        {% if day.weekday == 5 %}
+                            <th scope="col" >{{ day | date:"d(D)" }}</th>
+                        {% elif day.weekday == 6 %}
+                            <th scope="col" >{{ day | date:"d(D)" }}</th>
+                            <script> 
+                                // 色を青に変更
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    document.getElementById("colorText").style.color = "blue";
+                                });
+                            </script>
+                        {% else %}
+                            <th scope="col">{{ day | date:"d(D)" }}</th>
+                            <script> 
+                                // 色を赤に変更
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    document.getElementById("colorText").style.color = "blue";
+                                });
+                            </script>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <!-- カレンダー作成 -->
+                {% for hour, schedules in calendar.items %}
+                    <tr>
+                        <td scope="row">{{ hour }}:00</td> <!--時間表示-->
+                        {% for datetime, reservation in schedules.items %}<!-- 各日の{{hour}}:00（ex: 10：00）の予約状況を表示-->
+                            <td>
+
+                                {% if datetime <= today %}<!--昨日より前の日はハイフンで表示-->
+                                    -  
+                                {% elif reservation %} <!--予約が空いている場合-->
+                                    〇
+                                {% else %}
+                                    ✖
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
