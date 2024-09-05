@@ -19,8 +19,8 @@
     {% for reservation in object_list %}
     <tr>
         <td>{{reservation.id}}</td>
-        <td>{{reservation.reservation_datetime}}</td>
-        <td>{{reservation.name}}</td>
+        <td>{{reservation.datetime}}</td>
+        <td>{{reservation.customer_name}}</td>
         <td>{{reservation.stay_times}}時間</td> <!--  手順10で追加 -->
         
         <td><!--  手順10で追加 -->

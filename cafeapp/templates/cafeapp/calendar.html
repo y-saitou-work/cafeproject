@@ -8,10 +8,10 @@
 
     <div>
         <div>
-            <a href="{% url 'calendar' customer_data.pk before.year before.month before.day %}">前週</a>
+            <a href="{% url 'calendar' before.year before.month before.day %}">前週</a>
         </div>
         <div>
-            <a  href="{% url 'calendar' customer_data.pk next.year next.month next.day %}">次週</a>
+            <a  href="{% url 'calendar' next.year next.month next.day %}">次週</a>
         </div>
     </div>
     <div>

@@ -24,6 +24,8 @@ urlpatterns = [
     # 手順1-7にて追加
     path('reservation/detail/<int:pk>', views.ReservationDetailView.as_view(), name='reservation_detail'),
     # 手順2-2
-    path('calendar/<int:pk>/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定されていない場合
-    path('calendar/<int:pk>/<int:year>/<int:month>/<int:day>/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定された場合
+    path('calendar/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定されていない場合
+    path('calendar/<int:year>/<int:month>/<int:day>/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定された場合
+
+    path('reserve/', views.ReservationView.as_view(), name='reserve')
 ]
