@@ -10,7 +10,6 @@ class Customer(models.Model):
 # 手順1-3
 class Reservation(models.Model):
     id = models.AutoField(primary_key=True)  # 自動的に連番で登録されるフィールド。
-    customer=models.ForeignKey(Customer, on_delete=models.CASCADE)  #変更
     customer_name = models.CharField(max_length=50)  #TODO Customerを外部参照
     datetime = models.DateTimeField(default=timezone.now)  # 変更
     end_datetime = models.DateTimeField(default=timezone.now) # 手順2-1で追加。カフェの利用終了予定時間

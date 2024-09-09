@@ -1,10 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect # 手順3で追加
 from django.views.generic import ListView, DetailView, View#  手順2-3で追加
 from .models import Reservation
 from datetime import datetime, date, timedelta, time#  手順2-3で追加
 from django.db.models import Q#  手順2-3で追加
-from django.utils.timezone import localtime, make_aware#  手順2-3で追加
-from .forms import ReservationForm
+from django.utils.timezone import localtime, make_aware  # 手順2-3で追加
+from .forms import ReservationForm   # 手順3で追加
 
 
 SEAT_NUM = 5  # 席数
@@ -57,7 +57,7 @@ class CalendarView(View):
         reservation_data = Reservation.objects.filter(datetime__gte=start_time, end_datetime__lte=end_time) # 日時がstart_datetime~enddatetimeまでの予約を抽出。
           # 利用開始時間>=カレンダーの始まり日時、利用終了時間<=カレンダーの終わり日時の場合を取得
         
-        # その時間に、一つでも予約があったら✖を付けるパターン
+        # 各日時の予約数をカウント、満席であればFalseを入れる
         for reservation in reservation_data: # 予約情報を1件づつreservationへ
             local_time = localtime(reservation.datetime)  # 現地のタイムゾーンでの日時を取得
             reservation_date = local_time.date()  #現地の日時を取得
@@ -86,8 +86,8 @@ class ReservationView(View):
         month = self.kwargs.get('month')
         day = self.kwargs.get('day')
         hour = self.kwargs.get('hour')
-        form =ReservationForm(request.POST or None)
-        return render(request,'reservation.html',{
+        form =ReservationForm(request.POST or None)  # 予約フォームのフォームを取得
+        return render(request,'cafeapp/reserve.html',{
             'year':year,
             'month': month,
             'day': day,
@@ -102,14 +102,26 @@ class ReservationView(View):
         hour = self.kwargs.get('hour')
         start_time = make_aware(datetime(year=year, month=month, day=day, hour=hour))
         end_time = make_aware(datetime(year=year, month=month, day=day, hour=hour + 1))
-        reservation_data = Reservation.objects.filter(year=year, month=month, day=day, hour=hour, start_time=start_time)
+        reservation_data = Reservation.objects.filter(datetime=start_time)
         form = ReservationForm(request.POST or None)
         if len(reservation_data) ==  SEAT_NUM:
             form.add_error(None, '満席です。\n別の日時で予約をお願いします。')
         else:
             if form.is_valid():
                 reservation = Reservation()
-                reservation.datetime = start_time 
-                reservation.end_datetime = end_time
-                reservation.customer_name = form.cleaned_data['customer_name']
-                
+                reservation.customer_name = form.cleaned_data['customer_name'] # フォームから値受け取り
+                reservation.datetime = start_time
+                reservation.stay_times = form.cleaned_data['stay_times']
+                reservation.end_datetime = start_time + timedelta(hours=reservation.stay_times)  #利用終了時間 = 利用開始時間 + 滞在時間 
+                reservation.remarks = form.cleaned_data['remarks']
+                reservation.is_preorder = form.cleaned_data['is_preorder']
+                reservation.save()  # 予約確定したら、DBに保存する
+                return redirect('calendar')  #　予約後の遷移先
+            
+        return render(request, "cafeapp/reserve.html",{
+            'year':year,
+            'month': month,
+            'day': day,
+            'hour': hour,
+            'form': form,
+        })

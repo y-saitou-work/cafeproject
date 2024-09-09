@@ -44,7 +44,7 @@
             </thead>
             <tbody>
                 <!-- カレンダー作成 -->
-                {% for hour, schedules in calendar.items %}
+                {% for hour, schedules in calendar.items %}  <!--items()→辞書において、各要素のキーと値に対してループ処理-->
                     <tr>
                         <td scope="row">{{ hour }}:00</td> <!--時間表示-->
                         {% for datetime, reservation in schedules.items %}<!-- 各日の{{hour}}:00（ex: 10：00）の予約状況を表示-->
@@ -53,7 +53,9 @@
                                 {% if datetime <= today %}<!--昨日より前の日はハイフンで表示-->
                                     -  
                                 {% elif reservation %} <!--予約が空いている場合-->
-                                    〇
+                                    <a href="{% url 'reserve' datetime.year datetime.month datetime.day hour %}">
+                                        〇
+                                    </a>    
                                 {% else %}
                                     ✖
                                 {% endif %}

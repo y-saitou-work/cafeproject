@@ -26,6 +26,6 @@ urlpatterns = [
     # 手順2-2
     path('calendar/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定されていない場合
     path('calendar/<int:year>/<int:month>/<int:day>/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定された場合
-
-    path('reserve/', views.ReservationView.as_view(), name='reserve')
+    # 手順3-1
+    path('reserve/<int:year>/<int:month>/<int:day>/<int:hour>', views.ReservationView.as_view(), name='reserve')
 ]
