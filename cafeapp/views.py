@@ -1,10 +1,10 @@
 from django.shortcuts import render,redirect # 手順3で追加
 from django.views.generic import ListView, DetailView, View#  手順2-3で追加
-from .models import Reservation
+from .models import Reservation, Menu, MenuSelected  # 手順3-6で追加
 from datetime import datetime, date, timedelta, time#  手順2-3で追加
 from django.db.models import Q#  手順2-3で追加
 from django.utils.timezone import localtime, make_aware  # 手順2-3で追加
-from .forms import ReservationForm   # 手順3で追加
+from .forms import ReservationForm, MenuSelectedForm # 手順3で追加
 
 
 SEAT_NUM = 5  # 席数
@@ -86,13 +86,19 @@ class ReservationView(View):
         month = self.kwargs.get('month')
         day = self.kwargs.get('day')
         hour = self.kwargs.get('hour')
-        form =ReservationForm(request.POST or None)  # 予約フォームのフォームを取得
+        reservation_form =ReservationForm(request.POST or None)  # 予約フォームのフォームを取得
+        menu_selected_form = MenuSelectedForm()  #手順3-6 MenuSelectedFormも取得
+
+        # メニューと価格を取得してテンプレートに渡す
+        menus_with_prices = Menu.objects.all().values('menu_name', 'price')  # メニュー名と価格を取得
         return render(request,'cafeapp/reserve.html',{
             'year':year,
             'month': month,
             'day': day,
             'hour': hour,
-            'form': form,
+            'form': reservation_form,
+            'menu_selected_form': menu_selected_form,  #手順3-6 MenuSelectedFormをテンプレートに渡す
+            'menus_with_prices' : menus_with_prices,
         })
     
     def post(self, request, *args, **kwargs):
@@ -102,26 +108,40 @@ class ReservationView(View):
         hour = self.kwargs.get('hour')
         start_time = make_aware(datetime(year=year, month=month, day=day, hour=hour))
         end_time = make_aware(datetime(year=year, month=month, day=day, hour=hour + 1))
+
+        reservation_form = ReservationForm(request.POST)  
+        menu_selected_form = MenuSelectedForm(request.POST)  #手順3-6 POSTされたデータをMenuSelectedFormに渡す
+        
         reservation_data = Reservation.objects.filter(datetime=start_time)
-        form = ReservationForm(request.POST or None)
-        if len(reservation_data) ==  SEAT_NUM:
-            form.add_error(None, '満席です。\n別の日時で予約をお願いします。')
+
+        if len(reservation_data) ==  SEAT_NUM: # もしも、calenderにアクセスしてからreservationに遷移する間に選択した日時が満席になった場合
+            reservation_form.add_error(None, '満席です。\n別の日時で予約をお願いします。')
         else:
-            if form.is_valid():
+            if reservation_form.is_valid() and menu_selected_form.is_valid():  # 両方のフォームが有効か確認
                 reservation = Reservation()
-                reservation.customer_name = form.cleaned_data['customer_name'] # フォームから値受け取り
+                reservation.customer_name = reservation_form.cleaned_data['customer_name'] # フォームから値受け取り
                 reservation.datetime = start_time
-                reservation.stay_times = form.cleaned_data['stay_times']
+                reservation.stay_times = reservation_form.cleaned_data['stay_times']
                 reservation.end_datetime = start_time + timedelta(hours=reservation.stay_times)  #利用終了時間 = 利用開始時間 + 滞在時間 
-                reservation.remarks = form.cleaned_data['remarks']
-                reservation.is_preorder = form.cleaned_data['is_preorder']
+                reservation.remarks = reservation_form.cleaned_data['remarks']
+                reservation.is_preorder = reservation_form.cleaned_data['is_preorder']
                 reservation.save()  # 予約確定したら、DBに保存する
+
+                for menu_name, quantity in menu_selected_form.cleaned_data.items():
+                    if quantity > 0:
+                        menu = Menu.objects.get(menu_name=menu_name)
+                        menu_selected = MenuSelected.objects.create(
+                            reservation=reservation,
+                            quantity=quantity
+                        )
+                        menu_selected.menus.add(menu)
                 return redirect('calendar')  #　予約後の遷移先
-            
+        
         return render(request, "cafeapp/reserve.html",{
             'year':year,
             'month': month,
             'day': day,
             'hour': hour,
-            'form': form,
+            'reservation_form': reservation_form,
+            'menu_selected_form': menu_selected_form,
         })
