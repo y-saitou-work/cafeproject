@@ -27,5 +27,11 @@ urlpatterns = [
     path('calendar/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定されていない場合
     path('calendar/<int:year>/<int:month>/<int:day>/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定された場合
     # 手順3-1
-    path('reserve/<int:year>/<int:month>/<int:day>/<int:hour>', views.ReservationView.as_view(), name='reserve')
+    path('reserve/<int:year>/<int:month>/<int:day>/<int:hour>', views.ReservationView.as_view(), name='reserve'),
+    # 手順4
+    path('reserve_complete/<str:datetime>/<str:customer_name>', views.ReserveCompleteView.as_view(), name='reserve_complete'),
+    # 手順5
+    path('top/',views.TopView.as_view(), name='top'),
+    path('',views.TopView.as_view(), name='top'),  # URL先が指定されなければ、自動的にTOPページが表示されるようにする
+
 ]

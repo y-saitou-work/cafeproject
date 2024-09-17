@@ -1,11 +1,12 @@
 from django.shortcuts import render,redirect # 手順3で追加
-from django.views.generic import ListView, DetailView, View#  手順2-3で追加
+from django.views.generic import ListView, DetailView, View,TemplateView#  手順2-3,5で追加
 from .models import Reservation, Menu, MenuSelected  # 手順3-6で追加
 from datetime import datetime, date, timedelta, time#  手順2-3で追加
 from django.db.models import Q#  手順2-3で追加
 from django.utils.timezone import localtime, make_aware  # 手順2-3で追加
 from .forms import ReservationForm, MenuSelectedForm # 手順3で追加
-
+from django.http import HttpResponseRedirect  # 手順4で追加
+from django.urls import reverse
 
 SEAT_NUM = 5  # 席数
 
@@ -107,7 +108,6 @@ class ReservationView(View):
         day = self.kwargs.get('day')
         hour = self.kwargs.get('hour')
         start_time = make_aware(datetime(year=year, month=month, day=day, hour=hour))
-        end_time = make_aware(datetime(year=year, month=month, day=day, hour=hour + 1))
 
         reservation_form = ReservationForm(request.POST)  
         menu_selected_form = MenuSelectedForm(request.POST)  #手順3-6 POSTされたデータをMenuSelectedFormに渡す
@@ -120,6 +120,7 @@ class ReservationView(View):
             if reservation_form.is_valid() and menu_selected_form.is_valid():  # 両方のフォームが有効か確認
                 reservation = Reservation()
                 reservation.customer_name = reservation_form.cleaned_data['customer_name'] # フォームから値受け取り
+                reservation.phone_number = reservation_form.cleaned_data['phone_number']
                 reservation.datetime = start_time
                 reservation.stay_times = reservation_form.cleaned_data['stay_times']
                 reservation.end_datetime = start_time + timedelta(hours=reservation.stay_times)  #利用終了時間 = 利用開始時間 + 滞在時間 
@@ -135,7 +136,11 @@ class ReservationView(View):
                             quantity=quantity
                         )
                         menu_selected.menus.add(menu)
-                return redirect('calendar')  #　予約後の遷移先
+                    #　予約後の遷移先
+                    return HttpResponseRedirect(reverse('reserve_complete', kwargs={
+                        'datetime' : start_time.strftime("%Y-%m-%d-%H-%M"),  # URLで使用するフォーマットに合わせる
+                        'customer_name' : reservation.customer_name
+                    }))
         
         return render(request, "cafeapp/reserve.html",{
             'year':year,
@@ -145,3 +150,31 @@ class ReservationView(View):
             'reservation_form': reservation_form,
             'menu_selected_form': menu_selected_form,
         })
+    
+# 手順4
+class ReserveCompleteView(View):
+   def get(self, request, *args, **kwargs):  
+        #*args: 複数の引数をタプルとして受け取る。**kwargs: 複数のキーワード引数を辞書として受け取る
+        datetime_str = self.kwargs.get('datetime')
+        customer_name = self.kwargs.get('customer_name')
+
+        # 予約情報テーブル(Reservationモデル)から、getされた日時・名前の予約番号を取得する。
+        ## ハイフン区切りの文字列を(datetime変数)、datetimeオブジェクトに変換して”%Y/%m/%d %H:%M"のフォーマットに
+        start_time = datetime.strptime(datetime_str, "%Y-%m-%d-%H-%M")
+        formatted_datetime = start_time.strftime("%Y-%m-%d %H:%M")
+        ## 条件を指定して、レコードを取得
+        reservation_info = Reservation.objects.get(datetime=formatted_datetime, customer_name=customer_name)
+        ## レコードから予約番号を取得
+        reservation_num = reservation_info.id
+
+        #formatted_datetimeを文字列にする
+        #str_datetime =formatted_datetime.strftime('"%Y/%m/%d %H:%M"')
+        return render(request,'cafeapp/reserve_complete.html',{
+            'datetime' : formatted_datetime,
+            'customer_name' : customer_name,
+            'reservation_num' : reservation_num
+        })
+   
+class TopView(TemplateView):
+    template_name = "cafeapp/top.html"
+
