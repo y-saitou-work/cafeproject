@@ -32,8 +32,10 @@
         </td>
         <!-- 手順9で作成 -->
         <td> 
-            <button  onclick="location.href='{% url 'reservation_detail' pk=reservation.pk %}'">詳細</button>
-            <button  onclick="location.href='{% url 'reservation_update' pk=reservation.pk %}'">変更</button>
+            <button onclick="location.href='{% url 'reservation_detail' pk=reservation.pk %}'">詳細</button>
+            <button onclick="location.href='{% url 'reservation_update' pk=reservation.pk %}'">変更</button>
+            <!--手順10で追加-->
+            <button onclick="location.href='{% url 'reservation_delete' pk=reservation.pk %}'">削除</button>
         </td>
     </tr>
     {% endfor %}

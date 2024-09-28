@@ -1,13 +1,13 @@
 from typing import Any
 from django.shortcuts import render,redirect, resolve_url # 手順3で追加
-from django.views.generic import ListView, DetailView, View, TemplateView, UpdateView#  手順2-3,5で追加
+from django.views.generic import ListView, DetailView, View, TemplateView, UpdateView, DeleteView  #  手順2-3,5,8,9で追加
 from .models import Reservation, Menu, MenuSelected  # 手順3-6で追加
 from datetime import datetime, date, timedelta, time#  手順2-3で追加
 from django.db.models import Q#  手順2-3で追加
 from django.utils.timezone import localtime, make_aware  # 手順2-3で追加
 from .forms import ReservationForm, MenuSelectedForm # 手順3で追加
 from django.http import HttpResponseRedirect  # 手順4で追加
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 
 SEAT_NUM = 5  # 席数
@@ -212,7 +212,17 @@ class CustomerReservationListView(ListView):
 
         return self.render_to_response(context)
 
+# 手順8で追加
 class ReservationUpdateView(UpdateView):
     model= Reservation
     fields = '__all__' # ユーザーが入力するフィールドを指定する
     template_name_suffix = '_update_form'  # 編集用のTemplateファイル名を指定。この場合はproduct_update_form.htmlとなる
+
+#手順9で追加
+class ReservationDeleteView(DeleteView):
+    model = Reservation
+    success_url = reverse_lazy('top')  # 削除成功したら、top画面へ遷移
+
+# 手順10
+class EmployeeTopView(TemplateView):
+    template_name = "cafeapp/employee_top.html"

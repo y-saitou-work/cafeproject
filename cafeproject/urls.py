@@ -25,6 +25,8 @@ urlpatterns = [
     path('reservation/detail/<int:pk>', views.ReservationDetailView.as_view(), name='reservation_detail'),
     # 手順8
     path('reservation/update/<int:pk>', views.ReservationUpdateView.as_view(), name='reservation_update'),
+    #手順9
+    path('reservation/delete/<int:pk>', views.ReservationDeleteView.as_view(), name='reservation_delete'),
     # 手順2-2
     path('calendar/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定されていない場合
     path('calendar/<int:year>/<int:month>/<int:day>/', views.CalendarView.as_view(), name='calendar'),  # 日にちが指定された場合
@@ -35,5 +37,7 @@ urlpatterns = [
     # 手順5
     path('top/',views.TopView.as_view(), name='top'),
     path('',views.TopView.as_view(), name='top'),  # URL先が指定されなければ、自動的にTOPページが表示されるようにする
-    path('customer_reservation_list/', views.CustomerReservationListView.as_view(), name='customer_reservation_list')
+    path('customer_reservation_list/', views.CustomerReservationListView.as_view(), name='customer_reservation_list'),
+    # 手順10
+    path('employee_top/',views.EmployeeTopView.as_view(), name='employee_top'),
 ]
