@@ -26,11 +26,15 @@
         <td><!--  手順10で追加 -->
             {% if reservation.is_preorder %}
                 有り
-            {% endif %}
+            {% else %}
                 無し
+            {% endif %}
         </td>
         <!-- 手順9で作成 -->
-        <td> <button  onclick="location.href='{% url 'reservation_detail' pk=reservation.pk %}'">詳細</button></td>
+        <td> 
+            <button  onclick="location.href='{% url 'reservation_detail' pk=reservation.pk %}'">詳細</button>
+            <button  onclick="location.href='{% url 'reservation_update' pk=reservation.pk %}'">変更</button>
+        </td>
     </tr>
     {% endfor %}
 </table>

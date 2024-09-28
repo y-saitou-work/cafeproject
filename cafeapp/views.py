@@ -1,5 +1,6 @@
-from django.shortcuts import render,redirect # 手順3で追加
-from django.views.generic import ListView, DetailView, View,TemplateView#  手順2-3,5で追加
+from typing import Any
+from django.shortcuts import render,redirect, resolve_url # 手順3で追加
+from django.views.generic import ListView, DetailView, View, TemplateView, UpdateView#  手順2-3,5で追加
 from .models import Reservation, Menu, MenuSelected  # 手順3-6で追加
 from datetime import datetime, date, timedelta, time#  手順2-3で追加
 from django.db.models import Q#  手順2-3で追加
@@ -7,6 +8,7 @@ from django.utils.timezone import localtime, make_aware  # 手順2-3で追加
 from .forms import ReservationForm, MenuSelectedForm # 手順3で追加
 from django.http import HttpResponseRedirect  # 手順4で追加
 from django.urls import reverse
+
 
 SEAT_NUM = 5  # 席数
 
@@ -18,6 +20,14 @@ class ReservationListView(ListView):
  # 手順1-6にて追加
 class ReservationDetailView(DetailView):
     model = Reservation
+
+    # 手順10にて、事前注文が表示できるように追加
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        reservaion = self.get_object() # 現在の予約を取得
+        context['menu_selected_items'] = MenuSelected.objects.filter(reservation=reservaion)
+        return context
+
 
 #  手順2-3で追加
 class CalendarView(View):
@@ -110,38 +120,45 @@ class ReservationView(View):
         start_time = make_aware(datetime(year=year, month=month, day=day, hour=hour))
 
         reservation_form = ReservationForm(request.POST)  
-        menu_selected_form = MenuSelectedForm(request.POST)  #手順3-6 POSTされたデータをMenuSelectedFormに渡す
-        
+        menu_selected_form = MenuSelectedForm(request.POST)  #手順3-6 POSTされたデータをMenuSelectedFormに渡
         reservation_data = Reservation.objects.filter(datetime=start_time)
 
-        if len(reservation_data) ==  SEAT_NUM: # もしも、calenderにアクセスしてからreservationに遷移する間に選択した日時が満席になった場合
+        if len(reservation_data) == SEAT_NUM: # もしも、calenderにアクセスしてからreservationに遷移する間に選択した日時が満席になった場合
             reservation_form.add_error(None, '満席です。\n別の日時で予約をお願いします。')
         else:
             if reservation_form.is_valid() and menu_selected_form.is_valid():  # 両方のフォームが有効か確認
-                reservation = Reservation()
-                reservation.customer_name = reservation_form.cleaned_data['customer_name'] # フォームから値受け取り
-                reservation.phone_number = reservation_form.cleaned_data['phone_number']
-                reservation.datetime = start_time
-                reservation.stay_times = reservation_form.cleaned_data['stay_times']
-                reservation.end_datetime = start_time + timedelta(hours=reservation.stay_times)  #利用終了時間 = 利用開始時間 + 滞在時間 
-                reservation.remarks = reservation_form.cleaned_data['remarks']
-                reservation.is_preorder = reservation_form.cleaned_data['is_preorder']
-                reservation.save()  # 予約確定したら、DBに保存する
+                # 上記部分をこちらに変更
+                reservation = Reservation.objects.create(
+                    customer_name=reservation_form.cleaned_data['customer_name'],
+                    phone_number=reservation_form.cleaned_data['phone_number'],
+                    datetime=start_time,
+                    stay_times=reservation_form.cleaned_data['stay_times'],
+                    end_datetime=start_time + timedelta(hours=reservation_form.cleaned_data['stay_times']),
+                    remarks=reservation_form.cleaned_data['remarks'],
+                    is_preorder=reservation_form.cleaned_data['is_preorder']
+                )
 
                 for menu_name, quantity in menu_selected_form.cleaned_data.items():
                     if quantity > 0:
-                        menu = Menu.objects.get(menu_name=menu_name)
-                        menu_selected = MenuSelected.objects.create(
-                            reservation=reservation,
-                            quantity=quantity
-                        )
-                        menu_selected.menus.add(menu)
-                    #　予約後の遷移先
-                    return HttpResponseRedirect(reverse('reserve_complete', kwargs={
-                        'datetime' : start_time.strftime("%Y-%m-%d-%H-%M"),  # URLで使用するフォーマットに合わせる
-                        'customer_name' : reservation.customer_name
-                    }))
-        
+                        try:
+                            menu = Menu.objects.get(menu_name=menu_name)
+                            
+                            menu_selected = MenuSelected.objects.create(
+                                reservation=reservation,
+                                quantity=quantity
+                            )
+                            
+                            menu_selected.menus.add(menu)  # ManyToManyの関係にメニューを追加
+                            menu_selected.save()
+                        except Menu.DoesNotExist:
+                            print(f"{menu_name} が存在しません")
+
+                #　予約後の遷移先
+                return HttpResponseRedirect(reverse('reserve_complete', kwargs={
+                    'datetime' : start_time.strftime("%Y-%m-%d-%H-%M"),  # URLで使用するフォーマットに合わせる
+                    'customer_name' : reservation.customer_name
+                }))
+  
         return render(request, "cafeapp/reserve.html",{
             'year':year,
             'month': month,
@@ -167,8 +184,6 @@ class ReserveCompleteView(View):
         ## レコードから予約番号を取得
         reservation_num = reservation_info.id
 
-        #formatted_datetimeを文字列にする
-        #str_datetime =formatted_datetime.strftime('"%Y/%m/%d %H:%M"')
         return render(request,'cafeapp/reserve_complete.html',{
             'datetime' : formatted_datetime,
             'customer_name' : customer_name,
@@ -178,3 +193,26 @@ class ReserveCompleteView(View):
 class TopView(TemplateView):
     template_name = "cafeapp/top.html"
 
+class CustomerReservationListView(ListView):
+    model = Reservation
+    template_name = 'reservation_list.html'
+    context_object_name = 'object_list'
+    paginate_by = 20
+
+    def post(self, request, *args, **kwargs):
+        # POSTリクエストで送信された名前を取得
+        name = request.POST.get('name')
+        phone_number = request.POST.get('phone_number')
+        # クエリセットをフィルタリング
+        queryset = Reservation.objects.filter(customer_name=name, phone_number=phone_number)
+        # フィルタリングされたクエリセットを手動でself.object_list
+        self.object_list = queryset
+        # self.object_listに設定したクエリセットを使ってコンテキストを作成し、テンプレートに渡す
+        context = super().get_context_data(object_list=self.object_list) 
+
+        return self.render_to_response(context)
+
+class ReservationUpdateView(UpdateView):
+    model= Reservation
+    fields = '__all__' # ユーザーが入力するフィールドを指定する
+    template_name_suffix = '_update_form'  # 編集用のTemplateファイル名を指定。この場合はproduct_update_form.htmlとなる

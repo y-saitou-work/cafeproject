@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block title %}予約変更{% endblock %}
+
+{% block content %}
+<h1>予約変更</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <br>
+    <input type="submit" value="変更">
+</form>
+{% endblock content %}
+    
+    

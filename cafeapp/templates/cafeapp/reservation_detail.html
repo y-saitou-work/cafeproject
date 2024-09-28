@@ -8,21 +8,53 @@
 <table border="1">
     <thead>
         <tr><th>受付No</th><td>{{object.id}}</td></tr>
-        <tr><th>来店時間</th><td>{{object.reservation_datetime}}</td></tr>
-        <tr><th>代表者名</th><td>{{object.name}}</td></tr>
+        <tr><th>来店時間</th><td>{{object.datetime}}</td></tr>
+        <tr><th>代表者名</th><td>{{object.customer_name}}</td></tr>
         <tr><th>滞在時間</th><td>{{reservation.stay_times}}時間</td></tr><!--  手順10で修正 -->
         <tr><th>備考</th><td>{{object.remarks}}</td></tr>    
         <tr><th>事前注文</th>
             <td><!--  手順10で修正 -->
-                {% if bject.is_preorder %}
+                {% if object.is_preorder %}
                     有り
-                {% endif %}
+                {% else %}
                     無し
+                {% endif %}
             </td>
         </tr>
     </thead>
 </table>
-    <a href="{% url 'reservation_list' %}">戻る</a>
+
+{% comment %}
+    以下、事前注文があった場合に、ちゅうもんないようを表示させる
+{% endcomment %}
+
+{% if object.is_preorder %}
+    <h1>ご注文内容</h1>
+
+    <table border="1">
+        <thread>
+            <tr>
+                <th>商品名</th>
+                <th>価格</th>
+                <th>数量</th>
+            </tr>
+        </thread>
+        <tbody>
+            
+            {% for item in menu_selected_items %}
+                {% for menu in item.menus.all %}
+                <tr>
+                    <td>{{ menu.menu_name }}</td>
+                    <td>{{ menu.price }}円</td>
+                    <td>{{ item.quantity }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+    
+<a href="{% url 'reservation_list' %}">戻る</a>
 {% endblock content %}
 
     

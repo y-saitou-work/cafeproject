@@ -20,9 +20,7 @@ class Reservation(models.Model):
 
     # 日時の変数を、 YYYY/MM/DD hh:mm形式に書式化して表示する変数
     def __str__(self):
-        datetime = timezone.localtime(self.datetime).strftime('%Y/%m/%d %H:%M')
-        end_datetime = timezone.localtime(self.end_datetime).strftime('%Y/%m/%d %H:%M')
-        return f'{datetime} ~ {end_datetime}'  # 変更
+        return str(self.id)
 
 class Category(models.Model):
     category_name = models.CharField(max_length=200)
