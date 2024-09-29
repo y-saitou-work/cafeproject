@@ -40,4 +40,6 @@ urlpatterns = [
     path('customer_reservation_list/', views.CustomerReservationListView.as_view(), name='customer_reservation_list'),
     # 手順10
     path('employee_top/',views.EmployeeTopView.as_view(), name='employee_top'),
+    # 手順11
+    path('menu_create/',views.MenuCreateView.as_view(), name='menu_create'),
 ]

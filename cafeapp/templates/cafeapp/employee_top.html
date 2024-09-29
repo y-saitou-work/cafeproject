@@ -8,7 +8,9 @@
     <a href="{% url 'reservation_list' %}">
         <button type="button">予約一覧へ</button>
     </a>
-    <button>新規商品登録</button>  <!--あとで修正する-->
+    <a href="{% url 'menu_create' %}">
+        <button type="button">新規商品登録</button>
+    </a>
     <button>商品一覧</button>  <!--あとで修正する-->
 {% endblock content %}
         

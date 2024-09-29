@@ -1,6 +1,6 @@
 from typing import Any
 from django.shortcuts import render,redirect, resolve_url # 手順3で追加
-from django.views.generic import ListView, DetailView, View, TemplateView, UpdateView, DeleteView  #  手順2-3,5,8,9で追加
+from django.views.generic import ListView, DetailView, View, TemplateView, UpdateView, DeleteView, CreateView  #  手順2-3,5,8,9,11で追加
 from .models import Reservation, Menu, MenuSelected  # 手順3-6で追加
 from datetime import datetime, date, timedelta, time#  手順2-3で追加
 from django.db.models import Q#  手順2-3で追加
@@ -226,3 +226,10 @@ class ReservationDeleteView(DeleteView):
 # 手順10
 class EmployeeTopView(TemplateView):
     template_name = "cafeapp/employee_top.html"
+
+# 手順11
+
+class MenuCreateView(CreateView):
+    model = Menu
+    fields = '__all__' # 新規作成時にユーザーが入力するフィールドを指定する
+    template_name = "cafeapp/menu_create.html"

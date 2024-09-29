@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone  #手順2-1追加
+from django.urls import reverse  # 手順11で追加
 
 
 # 手順2-1
@@ -32,6 +33,10 @@ class Menu(models.Model):
     menu_name = models.CharField(max_length=80)
     price = models.PositiveIntegerField(default=0)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)  # Categoryが削除されたら、結びついているProductも削除される設定
+    #手順11で追加
+    #新規作成・編集完了時のリダイレクト先
+    def get_absolute_url(self):
+        return reverse('employee_top')
 
 class MenuSelected(models.Model):
     menus = models.ManyToManyField(Menu)  # 多対多の関係
