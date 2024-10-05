@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}メニュー一覧{% endblock %}
+
+{% block content %}
+<h1>メニュー一覧</h1>
+<table border="1">
+    <thead>
+        <tr>
+            <th>メニュー名</th>
+            <th>価格</th>
+            <th>カテゴリー</th>
+            <th>アクション</th>
+        </tr>
+    </thead>
+    
+    {% for menu in object_list %}
+    <tr>
+        <td>{{menu.menu_name}}</td>
+        <td>{{menu.price}}</td>
+        <td>{{menu.category}}</td>
+        <td>
+        {% comment %} 手順13で追加 {% endcomment %}
+            <button onclick="location.href='{% url 'menu_update' pk=menu.pk %}'">編集</button>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock content %}

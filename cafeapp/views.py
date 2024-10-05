@@ -228,8 +228,20 @@ class EmployeeTopView(TemplateView):
     template_name = "cafeapp/employee_top.html"
 
 # 手順11
-
 class MenuCreateView(CreateView):
     model = Menu
     fields = '__all__' # 新規作成時にユーザーが入力するフィールドを指定する
     template_name = "cafeapp/menu_create.html"
+
+
+# 手順12
+class MenuListView(ListView):
+    model = Menu
+    #template_name = "cafeapp/meu_list.html"
+
+class MenuUpdateView(UpdateView):
+    model = Menu
+    fields = '__all__' # ユーザーが編集するフィールドを指定する
+    template_name_suffix='_update_form' # 編集用のTemplateファイル名を指定。この場合はmenu_update_form.htmlとなる
+
+

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}新規商品登録{% endblock %}
+{% block title %}新規メニュー登録{% endblock %}
 
 
 {% block content %}
-<h1>新規商品登録</h1>
+<h1>新規メニュー登録</h1>
 <form method="post">
     {% csrf_token %}
     {{form.as_p}}

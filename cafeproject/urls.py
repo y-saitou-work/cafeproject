@@ -42,4 +42,8 @@ urlpatterns = [
     path('employee_top/',views.EmployeeTopView.as_view(), name='employee_top'),
     # 手順11
     path('menu_create/',views.MenuCreateView.as_view(), name='menu_create'),
+    # 手順12
+    path('menu_list/', views.MenuListView.as_view(), name='menu_list'),
+    # 手順13
+    path('menu_update/<int:pk>', views.MenuUpdateView.as_view(), name='menu_update'),
 ]
