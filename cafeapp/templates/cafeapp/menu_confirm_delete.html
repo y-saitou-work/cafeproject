@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} メニュー削除 {% endblock %}
+
+{% block content %}
+    <h1>メニュー削除</h1>
+    <form method="post">
+        {% csrf_token %}
+        以下のメニューを削除してもよろしいですか？<br>
+        <table border="1">
+            <thead>
+                <tr><th>メニュー名</th><td>{{object.menu_name}}</td></tr>
+                <tr><th>価格</th><td>{{object.price}}</td></tr>
+                <tr><th>カテゴリー</th><td>{{object.category}}</td></tr>
+            </thead>
+        </table>
+        
+        <input type="submit" value="削除">
+    </form>
+
+    <button onclick="location.href='{% url 'menu_list' %}'">戻る</button>
+{% endblock  %}
+    

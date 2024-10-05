@@ -238,10 +238,14 @@ class MenuCreateView(CreateView):
 class MenuListView(ListView):
     model = Menu
     #template_name = "cafeapp/meu_list.html"
-
+#手順13
 class MenuUpdateView(UpdateView):
     model = Menu
     fields = '__all__' # ユーザーが編集するフィールドを指定する
     template_name_suffix='_update_form' # 編集用のTemplateファイル名を指定。この場合はmenu_update_form.htmlとなる
 
+# 手順14
 
+class MenuDeleteView(DeleteView):
+    model = Menu
+    success_url = reverse_lazy('menu_list')

@@ -46,4 +46,6 @@ urlpatterns = [
     path('menu_list/', views.MenuListView.as_view(), name='menu_list'),
     # 手順13
     path('menu_update/<int:pk>', views.MenuUpdateView.as_view(), name='menu_update'),
+    # 手順14
+    path('menu_delete/<int:pk>', views.MenuDeleteView.as_view(), name='menu_delete'),
 ]

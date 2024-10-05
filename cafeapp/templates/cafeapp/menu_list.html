@@ -20,8 +20,9 @@
         <td>{{menu.price}}</td>
         <td>{{menu.category}}</td>
         <td>
-        {% comment %} 手順13で追加 {% endcomment %}
+        {% comment %} 手順13,14で追加 {% endcomment %}
             <button onclick="location.href='{% url 'menu_update' pk=menu.pk %}'">編集</button>
+            <button onclick="location.href='{% url 'menu_delete' pk=menu.pk %}'">削除</button>
         </td>
     </tr>
     {% endfor %}
