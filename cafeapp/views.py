@@ -1,5 +1,4 @@
-from typing import Any
-from django.shortcuts import render,redirect, resolve_url # 手順3で追加
+from django.shortcuts import render # 手順3で追加
 from django.views.generic import ListView, DetailView, View, TemplateView, UpdateView, DeleteView, CreateView  #  手順2-3,5,8,9,11で追加
 from .models import Reservation, Menu, MenuSelected  # 手順3-6で追加
 from datetime import datetime, date, timedelta, time#  手順2-3で追加
@@ -10,7 +9,7 @@ from django.http import HttpResponseRedirect  # 手順4で追加
 from django.urls import reverse, reverse_lazy
 
 
-SEAT_NUM = 5  # 席数
+SEAT_NUM = 5  # 席数を定数に保存
 
  # 手順1-5にて追加
 class ReservationListView(ListView):
@@ -92,11 +91,14 @@ class CalendarView(View):
         })
 
 class ReservationView(View):
+    # 注)フォームクラスの利用
+    # なぜgetとpostに同じことを書いているの？
     def get(self, request, *args, **kwargs):
         year = self.kwargs.get('year')
         month = self.kwargs.get('month')
         day = self.kwargs.get('day')
         hour = self.kwargs.get('hour')
+        # TODO　下記の引数の意味
         reservation_form =ReservationForm(request.POST or None)  # 予約フォームのフォームを取得
         menu_selected_form = MenuSelectedForm()  #手順3-6 MenuSelectedFormも取得
 
@@ -195,8 +197,6 @@ class TopView(TemplateView):
 
 class CustomerReservationListView(ListView):
     model = Reservation
-    template_name = 'reservation_list.html'
-    context_object_name = 'object_list'
     paginate_by = 20
 
     def post(self, request, *args, **kwargs):
@@ -231,13 +231,11 @@ class EmployeeTopView(TemplateView):
 class MenuCreateView(CreateView):
     model = Menu
     fields = '__all__' # 新規作成時にユーザーが入力するフィールドを指定する
-    template_name = "cafeapp/menu_create.html"
-
 
 # 手順12
 class MenuListView(ListView):
     model = Menu
-    #template_name = "cafeapp/meu_list.html"
+   
 #手順13
 class MenuUpdateView(UpdateView):
     model = Menu
@@ -245,7 +243,6 @@ class MenuUpdateView(UpdateView):
     template_name_suffix='_update_form' # 編集用のTemplateファイル名を指定。この場合はmenu_update_form.htmlとなる
 
 # 手順14
-
 class MenuDeleteView(DeleteView):
     model = Menu
-    success_url = reverse_lazy('menu_list')
+    success_url = reverse_lazy('menu_list')  # 削除成功したら、top画面へ遷移

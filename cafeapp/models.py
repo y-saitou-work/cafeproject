@@ -19,7 +19,7 @@ class Reservation(models.Model):
     remarks = models.CharField(max_length=200, blank=True)
     is_preorder = models.PositiveIntegerField(default=0)  # 事前注文の有無を表す。「有」=1,「無」=0
 
-    # 日時の変数を、 YYYY/MM/DD hh:mm形式に書式化して表示する変数
+    # 日時の変数を、 YYYY/MM/DD hh:mm形式に書式化aして表示する変数
     def __str__(self):
         return str(self.id)
 

@@ -10,7 +10,7 @@
         <tr><th>受付No</th><td>{{object.id}}</td></tr>
         <tr><th>来店時間</th><td>{{object.datetime}}</td></tr>
         <tr><th>代表者名</th><td>{{object.customer_name}}</td></tr>
-        <tr><th>滞在時間</th><td>{{reservation.stay_times}}時間</td></tr><!--  手順10で修正 -->
+        <tr><th>滞在時間</th><td>{{object.stay_times}}時間</td></tr><!--  手順10で修正 -->
         <tr><th>備考</th><td>{{object.remarks}}</td></tr>    
         <tr><th>事前注文</th>
             <td><!--  手順10で修正 -->
@@ -53,9 +53,8 @@
         </tbody>
     </table>
 {% endif %}
-    
-<a href="{% url 'reservation_list' %}">戻る</a>
-{% endblock content %}
+
+{% endblock %}
 
     
     

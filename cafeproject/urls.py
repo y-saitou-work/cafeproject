@@ -35,7 +35,7 @@ urlpatterns = [
     # 手順4
     path('reserve_complete/<str:datetime>/<str:customer_name>', views.ReserveCompleteView.as_view(), name='reserve_complete'),
     # 手順5
-    path('top/',views.TopView.as_view(), name='top'),
+    #path('top/',views.TopView.as_view(), name='top'),
     path('',views.TopView.as_view(), name='top'),  # URL先が指定されなければ、自動的にTOPページが表示されるようにする
     path('customer_reservation_list/', views.CustomerReservationListView.as_view(), name='customer_reservation_list'),
     # 手順10
