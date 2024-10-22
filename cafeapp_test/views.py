@@ -1,4 +1,4 @@
-from django.shortcuts import render # 手順3で追加
+from django.shortcuts import render, redirect # 手順3で追加
 from django.views.generic import ListView, DetailView, View, TemplateView, UpdateView, DeleteView, CreateView  #  手順2-3,5,8,9,11で追加
 from .models import Reservation, Menu, MenuSelected  # 手順3-6で追加
 from datetime import datetime, date, timedelta, time#  手順2-3で追加
@@ -41,7 +41,7 @@ class CalendarView(View):
         if year and month and day:  # 日付がURLで指定された場合は、その日をstart_dateへ指定する。
             # 週初め
             start_date = date(year=year, month=month, day=day)
-        else:  # 日付がURLで指定されtていない場合は、本日をstart_dateへ指定する。
+        else:  # 日付がURLで指定されていない場合は、本日をstart_dateへ指定する。
             start_date = today
         
         # 1週間の日付ｗリストにする
@@ -91,46 +91,63 @@ class CalendarView(View):
         })
 
 class ReservationView(View):
-    # 注)フォームクラスの利用
-    # なぜgetとpostに同じことを書いているの？
+    # getメソッド...主にデータの取得や表示を行います。フォームやページを表示する際に使われ、ユーザーが特定のリソースを要求した際に、そのリソース（HTMLページやデータ）を返す役割があります。
+    # 例えば、予約ページを開いてメニューの一覧を表示したり、指定された日付の情報を表示する処理に使われます。
     def get(self, request, *args, **kwargs):
-        year = self.kwargs.get('year')
-        month = self.kwargs.get('month')
-        day = self.kwargs.get('day')
+        """予約フォームと、事前注文用のメニュー選択フォームを表示する"""
+        # kwargsから日付情報を取得
+        year = kwargs.get('year')
+        month = kwargs.get('month')
+        day = kwargs.get('day')
         hour = self.kwargs.get('hour')
         # TODO　下記の引数の意味
-        reservation_form =ReservationForm(request.POST or None)  # 予約フォームのフォームを取得
+        reservation_form =ReservationForm(request.POST or None)  # 予約フォームを取得
         menu_selected_form = MenuSelectedForm()  #手順3-6 MenuSelectedFormも取得
 
         # メニューと価格を取得してテンプレートに渡す
         menus_with_prices = Menu.objects.all().values('menu_name', 'price')  # メニュー名と価格を取得
-        return render(request,'cafeapp/reserve.html',{
+
+        # コンテキストデータを作成してテンプレートへ渡す
+        context = {
             'year':year,
             'month': month,
             'day': day,
             'hour': hour,
-            'form': reservation_form,
-            'menu_selected_form': menu_selected_form,  #手順3-6 MenuSelectedFormをテンプレートに渡す
             'menus_with_prices' : menus_with_prices,
-        })
-    
+            'form': reservation_form, # TODOcontextの中にフォームを入れて大丈夫？
+            'menu_selected_form': menu_selected_form,  #手順3-6 MenuSelectedFormをテンプレートに渡す
+        }
+
+        return render(request, 'cafeapp/reserve.html', context)
+
+    # postメソッド...主にデータの送信や処理を行います。ユーザーがフォームを送信した際に、そのデータを受け取り、データベースに保存したり、処理を行う際に使われます。
+    # 予約フォームを送信して新しい予約を作成したり、選択されたメニューを保存する処理に使われます。
     def post(self, request, *args, **kwargs):
+        # 予約データを保存し、関連するメニューも保存する
+        #URLで渡された日時情報を受け取り
         year = self.kwargs.get('year')
         month = self.kwargs.get('month')
         day = self.kwargs.get('day')
         hour = self.kwargs.get('hour')
         start_time = make_aware(datetime(year=year, month=month, day=day, hour=hour))
 
-        reservation_form = ReservationForm(request.POST)  
+        reservation = self.create_reservation(request, start_time)
+        
+        return self.redirect_to_confirmation(start_time, reservation)
+        
+    
+    def create_reservation(self, request, start_time):
+        """予約ページに入力された内容から予約情報を作成して保存する"""
+        reservation_form = ReservationForm(request.POST) 
         menu_selected_form = MenuSelectedForm(request.POST)  #手順3-6 POSTされたデータをMenuSelectedFormに渡
         reservation_data = Reservation.objects.filter(datetime=start_time)
-
+        
         if len(reservation_data) == SEAT_NUM: # もしも、calenderにアクセスしてからreservationに遷移する間に選択した日時が満席になった場合
             reservation_form.add_error(None, '満席です。\n別の日時で予約をお願いします。')
-        else:
-            if reservation_form.is_valid() and menu_selected_form.is_valid():  # 両方のフォームが有効か確認
-                # 上記部分をこちらに変更
-                reservation = Reservation.objects.create(
+            return None
+        
+        if reservation_form.is_valid() and menu_selected_form.is_valid():  # 両方のフォームが有効か確認
+            reservation = Reservation.objects.create(
                     customer_name=reservation_form.cleaned_data['customer_name'],
                     phone_number=reservation_form.cleaned_data['phone_number'],
                     datetime=start_time,
@@ -138,37 +155,40 @@ class ReservationView(View):
                     end_datetime=start_time + timedelta(hours=reservation_form.cleaned_data['stay_times']),
                     remarks=reservation_form.cleaned_data['remarks'],
                     is_preorder=reservation_form.cleaned_data['is_preorder']
-                )
+            )
 
-                for menu_name, quantity in menu_selected_form.cleaned_data.items():
-                    if quantity > 0:
-                        try:
-                            menu = Menu.objects.get(menu_name=menu_name)
-                            
-                            menu_selected = MenuSelected.objects.create(
-                                reservation=reservation,
-                                quantity=quantity
-                            )
-                            
-                            menu_selected.menus.add(menu)  # ManyToManyの関係にメニューを追加
-                            menu_selected.save()
-                        except Menu.DoesNotExist:
-                            print(f"{menu_name} が存在しません")
+            # 「事前注文あり」が1だった場合は、メニューを保存するsave_selected_menusメソッドへ
+            if reservation_form.cleaned_data['is_preorder'] == 1: 
+                self.save_selected_menus(request, reservation,menu_selected_form)
+            return reservation
+        else:
+            return None # フォームが無効の場合もNoneを返す
 
-                #　予約後の遷移先
-                return HttpResponseRedirect(reverse('reserve_complete', kwargs={
-                    'datetime' : start_time.strftime("%Y-%m-%d-%H-%M"),  # URLで使用するフォーマットに合わせる
-                    'customer_name' : reservation.customer_name
-                }))
-  
-        return render(request, "cafeapp/reserve.html",{
-            'year':year,
-            'month': month,
-            'day': day,
-            'hour': hour,
-            'reservation_form': reservation_form,
-            'menu_selected_form': menu_selected_form,
-        })
+    def save_selected_menus(self, request, reservation, menu_selected_form):
+        """選択されたメニューを保存する"""
+        # menu_selected_form.cleaned_data=バリデーションをクリアしたものだけを辞書形式で格納したもの
+        for menu_name, quantity in menu_selected_form.cleaned_data.items():
+            if quantity > 0:
+                try:
+                    menu = Menu.objects.get(menu_name=menu_name)
+                    
+                    menu_selected = MenuSelected.objects.create(
+                        reservation=reservation,
+                        quantity=quantity
+                    )
+                    
+                    menu_selected.menus.add(menu)  # ManyToManyの関係にメニューを追加
+                    menu_selected.save()
+                except Menu.DoesNotExist:
+                    print(f"{menu_name} が存在しません")
+
+    def redirect_to_confirmation(self, start_time,reservation):
+        """予約完了後、予約番号と顧客名をGETパラメータに含めたURLにリダイレクトします。"""
+        return HttpResponseRedirect(reverse('reserve_complete', kwargs={
+            'datetime' : start_time.strftime("%Y-%m-%d-%H-%M"),  # URLで使用するフォーマットに合わせる
+            'customer_name' : reservation.customer_name
+        }))
+
     
 # 手順4
 class ReserveCompleteView(View):
@@ -178,20 +198,27 @@ class ReserveCompleteView(View):
         customer_name = self.kwargs.get('customer_name')
 
         # 予約情報テーブル(Reservationモデル)から、getされた日時・名前の予約番号を取得する。
-        ## ハイフン区切りの文字列を(datetime変数)、datetimeオブジェクトに変換して”%Y/%m/%d %H:%M"のフォーマットに
+        ## ハイフン区切りの文字列を datetime オブジェクトに変換する
         start_time = datetime.strptime(datetime_str, "%Y-%m-%d-%H-%M")
-        formatted_datetime = start_time.strftime("%Y-%m-%d %H:%M")
-        ## 条件を指定して、レコードを取得
-        reservation_info = Reservation.objects.get(datetime=formatted_datetime, customer_name=customer_name)
-        ## レコードから予約番号を取得
+        # タイムゾーンを考慮して aware な datetime オブジェクトに変換する
+        start_time_aware = make_aware(start_time)
+        # Reservation モデルから datetime と customer_name で検索する。
+        # datetime と customer_nameの組み合わせで複数ある場合は、最新のものを選択
+        reservation_info = Reservation.objects.filter(
+            datetime=start_time_aware, customer_name=customer_name
+        ).latest('id')
+        # レコードから予約番号を取得
         reservation_num = reservation_info.id
 
         return render(request,'cafeapp/reserve_complete.html',{
-            'datetime' : formatted_datetime,
+            'datetime' : start_time.strftime("%Y-%m-%d %H:%M"),
             'customer_name' : customer_name,
             'reservation_num' : reservation_num
         })
    
+class ReservationError(View):
+    template_name = "cafeapp/reservation_error.html"
+
 class TopView(TemplateView):
     template_name = "cafeapp/top.html"
 

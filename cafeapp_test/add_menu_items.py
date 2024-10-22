@@ -1,4 +1,4 @@
-from cafeapp.models import Menu, Category  # Categoryモデルをインポート
+from cafeapp_test.models import Menu, Category  # Categoryモデルをインポート
 
 # カテゴリ名と対応するインスタンスを辞書で保持
 category_names = {

@@ -5,6 +5,7 @@ from django.forms.utils import ErrorList
 from .models import Menu, MenuSelected
 
 class ReservationForm(forms.Form):
+    """予約フォーム。基本的な情報を入力するフォーム"""
     customer_name = forms.CharField(max_length=50, label='お名前')
     phone_number = forms.CharField(max_length=15, label='電話番号(ハイフンなし)')
     stay_times = forms.IntegerField(label='滞在時間(1時間単位)')
@@ -12,6 +13,7 @@ class ReservationForm(forms.Form):
     is_preorder = forms.IntegerField(label='事前注文(有り=1、無し=0で記入)')  # 事前注文の有無を表す。「有」=1,「無」=0
 
 class MenuSelectedForm(forms.Form):
+    """事前注文用のメニュー選択フォーム"""
     def __init__(self, *args, **kwargs):  # このクラスが呼び出されたら、自動的に最初に行うメソッド
         super().__init__(*args, **kwargs)
         menus = Menu.objects.all()  # 全てのメニューを取得
