@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cafeapp', '0009_rename_name_category_category_name'),
+        ('cafeapp_test', '0009_rename_name_category_category_name'),
     ]
 
     operations = [

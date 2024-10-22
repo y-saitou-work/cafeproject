@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cafeapp', '0007_remove_reservation_customer'),
+        ('cafeapp_test', '0007_remove_reservation_customer'),
     ]
 
     operations = [
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('menu_name', models.CharField(max_length=80)),
                 ('price', models.PositiveIntegerField(default=0)),
                 ('img', models.ImageField(blank=True, default='noImage.png', upload_to='')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cafeapp.category')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cafeapp_test.category')),
             ],
         ),
     ]

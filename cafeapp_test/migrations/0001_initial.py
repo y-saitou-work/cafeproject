@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('stay_times', models.IntegerField(default=0)),
                 ('remarks', models.CharField(blank=True, max_length=200)),
                 ('is_preorder', models.IntegerField(default=0)),
-                ('customer_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cafeapp.customer', verbose_name='顧客ID')),
+                ('customer_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cafeapp_test.customer', verbose_name='顧客ID')),
             ],
         ),
     ]

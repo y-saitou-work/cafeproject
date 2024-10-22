@@ -80,7 +80,7 @@ class CalendarView(View):
             if booked_seat[reservation_hour][reservation_date] ==SEAT_NUM:
                 calendar[reservation_hour][reservation_date] = False  #予約の日時の二次元配列をFにすることで、予約を設定している。
         
-        return render(request, 'cafeapp/calendar.html', {
+        return render(request, 'cafeapp_test/calendar.html', {
             'calendar': calendar,
             'days': days,
             'start_day': start_day,
@@ -118,7 +118,7 @@ class ReservationView(View):
             'menu_selected_form': menu_selected_form,  #手順3-6 MenuSelectedFormをテンプレートに渡す
         }
 
-        return render(request, 'cafeapp/reserve.html', context)
+        return render(request, 'cafeapp_test/reserve.html', context)
 
     # postメソッド...主にデータの送信や処理を行います。ユーザーがフォームを送信した際に、そのデータを受け取り、データベースに保存したり、処理を行う際に使われます。
     # 予約フォームを送信して新しい予約を作成したり、選択されたメニューを保存する処理に使われます。
@@ -210,17 +210,17 @@ class ReserveCompleteView(View):
         # レコードから予約番号を取得
         reservation_num = reservation_info.id
 
-        return render(request,'cafeapp/reserve_complete.html',{
+        return render(request,'cafeapp_test/reserve_complete.html',{
             'datetime' : start_time.strftime("%Y-%m-%d %H:%M"),
             'customer_name' : customer_name,
             'reservation_num' : reservation_num
         })
    
 class ReservationError(View):
-    template_name = "cafeapp/reservation_error.html"
+    template_name = "cafeapp_test/reservation_error.html"
 
 class TopView(TemplateView):
-    template_name = "cafeapp/top.html"
+    template_name = "cafeapp_test/top.html"
 
 class CustomerReservationListView(ListView):
     model = Reservation
@@ -252,7 +252,7 @@ class ReservationDeleteView(DeleteView):
 
 # 手順10
 class EmployeeTopView(TemplateView):
-    template_name = "cafeapp/employee_top.html"
+    template_name = "cafeapp_test/employee_top.html"
 
 # 手順11
 class MenuCreateView(CreateView):

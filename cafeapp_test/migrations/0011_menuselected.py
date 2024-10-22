@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cafeapp', '0010_remove_menu_img'),
+        ('cafeapp_test', '0010_remove_menu_img'),
     ]
 
     operations = [
@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.PositiveIntegerField(default=0)),
-                ('menus', models.ManyToManyField(to='cafeapp.menu')),
-                ('reservation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cafeapp.reservation')),
+                ('menus', models.ManyToManyField(to='cafeapp_test.menu')),
+                ('reservation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cafeapp_test.reservation')),
             ],
         ),
     ]

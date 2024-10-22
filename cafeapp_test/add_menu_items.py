@@ -1,3 +1,15 @@
+# import os
+# import sys
+
+# # プロジェクトのルートディレクトリを追加
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)))  # プロジェクトの絶対パスを指定
+
+# # Django環境を設定
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cafeproject_test.settings')
+
+# import django
+# django.setup()
+
 from cafeapp_test.models import Menu, Category  # Categoryモデルをインポート
 
 # カテゴリ名と対応するインスタンスを辞書で保持

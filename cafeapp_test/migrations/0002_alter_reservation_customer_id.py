@@ -7,13 +7,13 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cafeapp', '0001_initial'),
+        ('cafeapp_test', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='reservation',
             name='customer_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cafeapp.customer'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cafeapp_test.customer'),
         ),
     ]

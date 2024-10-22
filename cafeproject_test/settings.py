@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cafeapp_test',
+    #'djgango_extensions',
 ]
 
 MIDDLEWARE = [
@@ -68,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'cafeproject.wsgi.application'
+WSGI_APPLICATION = 'cafeproject_test.wsgi.application'
 
 
 # Database
