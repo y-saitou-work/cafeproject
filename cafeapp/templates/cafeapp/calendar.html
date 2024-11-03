@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+
+{% block title %} 予約カレンダー {% endblock title %}
+
 {% block content %}
 
 <div>
@@ -52,7 +55,7 @@
 
                                 {% if datetime <= today %}<!--昨日より前の日はハイフンで表示-->
                                     -  
-                                {% elif reservation %} <!--予約が空いている場合-->
+                                {% elif reservation %} <!--予約可能な場合は〇を表示-->
                                     <a href="{% url 'reserve' datetime.year datetime.month datetime.day hour %}">
                                         〇
                                     </a>    

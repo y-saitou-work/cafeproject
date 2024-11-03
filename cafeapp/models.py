@@ -11,15 +11,15 @@ class Customer(models.Model):
 # 手順1-3
 class Reservation(models.Model):
     id = models.AutoField(primary_key=True)  # 自動的に連番で登録されるフィールド。
-    customer_name = models.CharField(max_length=50)  #TODO Customerを外部参照
-    phone_number = models.CharField(max_length=11)  # 手順5にて追加
-    datetime = models.DateTimeField(default=timezone.now)  # 変更
-    end_datetime = models.DateTimeField(default=timezone.now) # 手順2-1で追加。カフェの利用終了予定時間
+    customer_name = models.CharField(max_length=50) 
+    phone_number = models.CharField(max_length=11)                    # 手順5にて追加
+    datetime = models.DateTimeField(default=timezone.now)              # 変更
+    end_datetime = models.DateTimeField(default=timezone.now)           # 手順2-1で追加。カフェの利用終了予定時間
     stay_times = models.PositiveIntegerField(default=0)  # 正の数のみ入力できるよう変更
     remarks = models.CharField(max_length=200, blank=True)
     is_preorder = models.PositiveIntegerField(default=0)  # 事前注文の有無を表す。「有」=1,「無」=0
 
-    # 日時の変数を、 YYYY/MM/DD hh:mm形式に書式化aして表示する変数
+    # 日時の変数を、 YYYY/MM/DD hh:mm形式に書式化して表示する変数
     def __str__(self):
         return str(self.id)
 

@@ -1,8 +1,7 @@
-from typing import Any, Mapping
+from typing import Any
 from django import forms
-from django.forms.renderers import BaseRenderer
-from django.forms.utils import ErrorList
-from .models import Menu, MenuSelected
+#from django.forms.renderers import BaseRenderer
+from .models import Menu
 
 class ReservationForm(forms.Form):
     customer_name = forms.CharField(max_length=50, label='お名前')
