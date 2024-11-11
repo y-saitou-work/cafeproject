@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block title %}dei Cafe 予約サイト{% endblock %}
+    
+
+{% block content %}
+<h1>dei Cafe 予約サイト</h1>
+<h3>ご利用ありがとうございます。</h3>
+
+
+    
+<h2>新規ご予約の方</h2>
+<a href="{% url 'calendar' %}">こちら</a>から予約してください<br>
+
+<h2>予約確認・変更・キャンセルの方</h2>
+以下をご記入の上、「予約一覧」をクリックしてください。<br>
+
+<form action="customer_reservation_list/" method="post">
+    {% csrf_token %}
+    <label for="name">お名前</label>
+    <input type="text" id = "name" name="name">
+    <label for="phone_number">電話番号</label>
+    <input type="text" id = "phone_number" name="phone_number">
+
+    <input type="submit" value="予約一覧">
+</form>
+
+
+{% endblock %}
+    

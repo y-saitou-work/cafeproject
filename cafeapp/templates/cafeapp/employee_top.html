@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}dei Cafe　従業員Top{% endblock title %}
+
+{% block content %}
+    <h1>dei Cafe　従業員Top</h1>
+
+    <a href="{% url 'reservation_list' %}">
+        <button type="button">予約一覧へ</button>
+    </a>
+    <a href="{% url 'menu_create' %}">
+        <button type="button">新規メニュー登録</button>
+    </a>
+    <a href="{% url 'menu_list' %}">
+        <button>メニュー一覧</button>
+    </a>
+{% endblock content %}
+        

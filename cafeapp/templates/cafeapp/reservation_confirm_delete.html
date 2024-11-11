@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block title %}削除 {% endblock %}
+
+{% block content %}
+    <h1>削除</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        以下予約を削除してもよろしいですか？<br>
+        <table border="1">
+            <thead>
+                <tr><th>受付No</th><td>{{object.id}}</td></tr>
+                <tr><th>来店時間</th><td>{{object.datetime}}</td></tr>
+                <tr><th>代表者名</th><td>{{object.customer_name}}</td></tr>
+                <tr><th>滞在時間</th><td>{{reservation.stay_times}}時間</td></tr><!--  手順10で修正 -->
+                <tr><th>備考</th><td>{{object.remarks}}</td></tr>    
+                <tr><th>事前注文</th>
+                    <td><!--  手順10で修正 -->
+                        {% if object.is_preorder %}
+                            有り
+                        {% else %}
+                            無し
+                        {% endif %}
+                    </td>
+                </tr>
+            </thead>
+        </table>
+        
+        <input type="submit" value="削除">
+    </form>
+{% endblock content %}
+    
+    

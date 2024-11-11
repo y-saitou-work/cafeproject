@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}店内飲食予約{% endblock %}
+
+
+{% block content %}
+    <h1>店内飲食予約</h1>
+    <p>ご来店日時：{{year}}年{{month}}月{{day}}日　{{hour}}:00</p>
+
+    <form method="post">
+        {% csrf_token %}
+         
+         {% for field in form %}
+            <div>
+                <label for="{{field.id_for_label}}">
+                    <strong>{{field.label_tag}}</strong>
+                </label>
+                {{field}}
+                {{field.errors}}
+            </div>
+         {% endfor %}
+
+        <!--メニュー選択フォーム　-->    
+        <!--TODO 事前注文＝1ならば表示-->        
+        <h2>事前ご注文</h2>
+        <table>
+            {% for field in menu_selected_form %}
+                <tr>
+                    <td>{{ field.label_tag }}</td>
+                    <td>{{ field }}</td>
+                    <td>
+                        {% for menu in menus_with_prices %}
+                            {% if menu.menu_name == field.label %}
+                                ¥{{ menu.price }}
+                            {% endif %}                        
+                        {% endfor %} 
+
+                    </td>
+                    <td>{{ field.errors }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <button type="submit">送信</button>
+    </form>
+{% endblock %}
+    

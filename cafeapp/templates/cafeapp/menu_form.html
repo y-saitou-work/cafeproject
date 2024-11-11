@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}新規メニュー登録{% endblock %}
+
+
+{% block content %}
+<h1>新規メニュー登録</h1>
+<form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <br>
+    <input type="submit" value="登録">
+</form>
+<br>
+<a href="{% url 'employee_top'}">戻る</a>
+{% endblock %}
+    
+    

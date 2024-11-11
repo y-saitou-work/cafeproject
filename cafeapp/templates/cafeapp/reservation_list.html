@@ -19,18 +19,24 @@
     {% for reservation in object_list %}
     <tr>
         <td>{{reservation.id}}</td>
-        <td>{{reservation.reservation_datetime}}</td>
-        <td>{{reservation.name}}</td>
+        <td>{{reservation.datetime}}</td>
+        <td>{{reservation.customer_name}}</td>
         <td>{{reservation.stay_times}}時間</td> <!--  手順10で追加 -->
         
         <td><!--  手順10で追加 -->
             {% if reservation.is_preorder %}
                 有り
-            {% endif %}
+            {% else %}
                 無し
+            {% endif %}
         </td>
         <!-- 手順9で作成 -->
-        <td> <button  onclick="location.href='{% url 'reservation_detail' pk=reservation.pk %}'">詳細</button></td>
+        <td> 
+            <button onclick="location.href='{% url 'reservation_detail' pk=reservation.pk %}'">詳細</button>
+            <button onclick="location.href='{% url 'reservation_update' pk=reservation.pk %}'">変更</button>
+            <!--手順10で追加-->
+            <button onclick="location.href='{% url 'reservation_delete' pk=reservation.pk %}'">削除</button>
+        </td>
     </tr>
     {% endfor %}
 </table>
@@ -49,5 +55,5 @@
     <a href="?page={{ page_obj.next_page_number }}">次へ</a>
     <a href="?page={{ page_obj.paginator.num_pages }}">最後 &raquo;</a>
 {% endif %}
-{% endblock content %}
+{% endblock %}
     
