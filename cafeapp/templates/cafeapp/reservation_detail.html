@@ -25,7 +25,7 @@
 </table>
 
 {% comment %}
-    以下、事前注文があった場合に、ちゅうもんないようを表示させる
+    以下、事前注文があった場合に、注文内容を表示させる
 {% endcomment %}
 
 {% if object.is_preorder %}
@@ -42,13 +42,11 @@
         <tbody>
             
             {% for item in menu_selected_items %}
-                {% for menu in item.menus.all %}
                 <tr>
-                    <td>{{ menu.menu_name }}</td>
-                    <td>{{ menu.price }}円</td>
+                    <td>{{ item.menu.menu_name }}</td>
+                    <td>{{ item.menu.price }}円</td>
                     <td>{{ item.quantity }}</td>
                 </tr>
-                {% endfor %}
             {% endfor %}
         </tbody>
     </table>

@@ -10,16 +10,19 @@ admin.site.register(Reservation,ReservationAdmin)
 
 # 手順3で作成
 class MenuAdmin(admin.ModelAdmin):
-    list_display = ('menu_name', 'price','category', )
-    search_fields = ('menu_name','category')
+    #list_display = ('menu_name', 'price','category', )
+    #search_fields = ('menu_name','category')
+    list_display = ('menu_name', 'price', )
+    search_fields = ('menu_name',)
 
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id','category_name')
+#class CategoryAdmin(admin.ModelAdmin):
+#    list_display = ('id','category_name')
     
 class MenuSelectedAdmin(admin.ModelAdmin):  # 手順3-5で追加
-    list_display = ('get_menus', 'reservation', 'quantity')
+    #list_display = ('get_menus', 'reservation', 'quantity')
+    list_display = ('menu', 'reservation', 'quantity')
 
 
 admin.site.register(Menu, MenuAdmin)
-admin.site.register(Category,CategoryAdmin)
+#admin.site.register(Category,CategoryAdmin)
 admin.site.register(MenuSelected, MenuSelectedAdmin)

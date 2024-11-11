@@ -30,24 +30,27 @@ class Category(models.Model):
         return self.category_name
 
 class Menu(models.Model):
+    #menu_id = models.AutoField(primary_key=True)
     menu_name = models.CharField(max_length=80)
     price = models.PositiveIntegerField(default=0)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # Categoryが削除されたら、結びついているProductも削除される設定
+    #category = models.ForeignKey(Category, on_delete=models.CASCADE)  # Categoryが削除されたら、結びついているProductも削除される設定
     #手順11で追加
     #新規作成・編集完了時のリダイレクト先
     def get_absolute_url(self):
         return reverse('employee_top')
 
 class MenuSelected(models.Model):
-    menus = models.ManyToManyField(Menu)  # 多対多の関係
+    #menu_selected_id = models.AutoField(primary_key=True)  # 自動的に連番でIDを作成
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)  # Menuとの多対1の関係
+    #menus = models.ManyToManyField(Menu)  # 多対多の関係
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
 
     # メニュー名はManyToManyFieldなので、MenuSelectedが複数もっている。それら全て表示するため、カンマ区切りで表示するメソッドを追加
-    def get_menus(self):
-        return ", ".join([menu.menu_name for menu in self.menus.all()])
+    #def get_menus(self):
+    #    return ", ".join([menu.menu_name for menu in self.menus.all()])
 
-    get_menus.short_description = "Menus"  # 管理サイトでの表示名を設定
+    #get_menus.short_description = "Menus"  # 管理サイトでの表示名を設定
 
 
 

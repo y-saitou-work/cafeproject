@@ -177,11 +177,12 @@ class ReservationView(View):
                     # MenuSelectedオブジェクトを作成して予約に関連付ける
                     menu_selected = MenuSelected.objects.create(
                         reservation=reservation,
+                        menu=menu,
                         quantity=quantity  # 選択された数量
                     )
                     
                     # ManyToManyFieldにメニューを追加
-                    menu_selected.menus.add(menu)  
+                    #menu_selected.menus.add(menu)  
                     menu_selected.save()
                 except Menu.DoesNotExist:  # メニューが存在しない場合のエラーハンドリング
                     print(f"{menu_name} が存在しません")
